@@ -40,6 +40,9 @@ export default function PlanForm({
   const [responsable, setResponsable] = useState(
     initialData?.responsable || ""
   );
+
+  const [cargo, setCargo] = useState(initialData?.cargo || "");
+
   const [objetivo, setObjetivo] = useState(
     initialData?.objetivo || "Objetivo A"
   );
@@ -56,6 +59,7 @@ export default function PlanForm({
     if (initialData) {
       setNombre(initialData.nombre);
       setResponsable(initialData.responsable);
+      setCargo(initialData.cargo);
       setObjetivo(initialData.objetivo);
       setFecha(new Date(initialData.fecha));
       setPrioridad(initialData.prioridad);
@@ -66,7 +70,11 @@ export default function PlanForm({
 
   // Validación básica
   const isValid =
-    !!nombre.trim() && !!responsable.trim() && !!descripcion.trim() && !!fecha;
+    !!nombre.trim() &&
+    !!responsable.trim() &&
+    !!cargo.trim() &&
+    !!descripcion.trim() &&
+    !!fecha;
 
   const handleClose = () => {
     setOpen(false);
@@ -80,8 +88,9 @@ export default function PlanForm({
     const payload = {
       nombre: nombre.trim(),
       responsable: responsable.trim(),
-      objetivo,
-      fecha: fecha.toISOString().split("T")[0], // "YYYY-MM-DD"
+      cargo: cargo.trim(),
+      objetivo: objetivo.trim(),
+      fecha: fecha.toISOString().split("T")[0],
       prioridad,
       descripcion: descripcion.trim(),
     };
@@ -147,23 +156,24 @@ export default function PlanForm({
                 fullWidth
                 required
               />
+              <TextField
+                label="Cargo"
+                value={cargo}
+                onChange={(e) => setCargo(e.target.value)}
+                fullWidth
+                required
+              />
             </Stack>
 
             <Stack direction="row" spacing={2}>
-              <FormControl fullWidth required>
-                <InputLabel>Objetivo</InputLabel>
-                <Select
-                  value={objetivo}
-                  label="Objetivo"
-                  onChange={(e) => setObjetivo(e.target.value as string)}
-                >
-                  {["Objetivo A", "Objetivo B", "Objetivo C"].map((o) => (
-                    <MenuItem key={o} value={o}>
-                      {o}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <TextField
+                label="Objetivo estratégico"
+                value={objetivo}
+                onChange={(e) => setObjetivo(e.target.value)}
+                fullWidth
+                required
+                placeholder="Ej.: Aumentar la cuota de mercado B2B un 15 %"
+              />
 
               <Box sx={{ flex: 1 }}>
                 <DatePicker

@@ -6,6 +6,7 @@ export interface Plan {
   id: string;
   nombre: string;
   responsable: string;
+  cargo: string;
   objetivo: string;
   fecha: string;
   prioridad: string;
@@ -13,7 +14,7 @@ export interface Plan {
   acciones: any[];
   feedback: any | null;
 }
-
+export type PlanDTO = Plan;
 export const listPlanes = () =>
   axios.get<Plan[]>(`${API}/planes`).then((res) => res.data);
 
@@ -27,9 +28,11 @@ export const updatePlan = (
 
 export const deletePlan = (id: string) => axios.delete(`${API}/planes/${id}`);
 
-export const analyzePlan = (id: string) =>
-  axios
-    .post<{ riesgos: string[]; sugerencias: string[] }>(
-      `${API}/planes/${id}/analyze`
-    )
-    .then((res) => res.data);
+export interface FeedbackIA {
+  riesgos: string[];
+  sugerencias: string[];
+  impacto_estimado: Record<string, number>;
+}
+
+export const analyzePlan = async (id: string): Promise<FeedbackIA> =>
+  axios.post(`${API}/planes/${id}/analyze`).then((res) => res.data);

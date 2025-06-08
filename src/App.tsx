@@ -55,19 +55,13 @@ export default function App() {
     [planes, reloadAll]
   );
 
-  const handleAnalyze = useCallback(
-    async (id: string) => {
-      const fb: FeedbackIA = await analyzePlan(id);
-      reloadAll();
-      alert(
-        "🛡️ Riesgos:\n" +
-          fb.riesgos.join("\n") +
-          "\n\n💡 Sugerencias:\n" +
-          fb.sugerencias.join("\n")
-      );
-    },
-    [reloadAll]
-  );
+  const handleAnalyze = useCallback(async (id: string) => {
+    const fb = await analyzePlan(id); // ⬅️ devuelve feedback
+    setPlanes((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, feedback: fb } : p))
+    );
+    return fb; // devolvemos al List
+  }, []);
 
   /* ---------- tarjetas resumen ------------ */
   const resumen = [
