@@ -1,4 +1,5 @@
-import React from "react";
+// src/App.tsx
+import React, { useCallback, useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -12,19 +13,80 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 
-import ImpactChart from "./components/ImpactChart";
-import BarChart from "./components/BarChart";
-import LineChart from "./components/LineChart";
 import PlanForm from "./components/PlanForm";
 import PlanList from "./components/PlanList";
 
-const App: React.FC = () => {
-  const cards = [
-    { label: "Planes creados", value: 0 },
-    { label: "Análisis IA pendientes", value: 0 },
-    { label: "Objetivos impactados", value: 0 },
+import { listPlanes, deletePlan, analyzePlan } from "./services/planService";
+import type { PlanDTO, FeedbackIA } from "./services/planService";
+
+export default function App() {
+  /* ---------------- estado ---------------- */
+  const [planes, setPlanes] = useState<PlanDTO[]>([]);
+  const [editing, setEditing] = useState<PlanDTO | null>(null);
+
+  /* -------------- utilidades -------------- */
+  const reloadAll = useCallback(() => {
+    listPlanes().then((data) => setPlanes(data.slice().reverse()));
+  }, []);
+
+  useEffect(reloadAll, [reloadAll]);
+
+  /* --------------- handlers --------------- */
+  const handleCreated = reloadAll;
+
+  const handleSaved = useCallback(() => {
+    setEditing(null);
+    reloadAll();
+  }, [reloadAll]);
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      const plan = planes.find((p) => p.id === id);
+      const nombre = plan ? `"${plan.nombre}"` : "";
+      if (
+        window.confirm(
+          `¿Seguro que deseas borrar el plan ${nombre}? Esta acción no se puede deshacer.`
+        )
+      ) {
+        await deletePlan(id);
+        reloadAll();
+      }
+    },
+    [planes, reloadAll]
+  );
+
+  const handleAnalyze = useCallback(
+    async (id: string) => {
+      const fb: FeedbackIA = await analyzePlan(id);
+      reloadAll();
+      alert(
+        "🛡️ Riesgos:\n" +
+          fb.riesgos.join("\n") +
+          "\n\n💡 Sugerencias:\n" +
+          fb.sugerencias.join("\n")
+      );
+    },
+    [reloadAll]
+  );
+
+  /* ---------- tarjetas resumen ------------ */
+  const resumen = [
+    { label: "Planes creados", value: planes.length },
+    {
+      label: "Análisis IA pendientes",
+      value: planes.filter((p) => !p.feedback).length,
+    },
+    {
+      label: "Objetivos impactados",
+      value: new Set(
+        planes.flatMap((p) =>
+          p.feedback ? Object.keys(p.feedback.impacto_estimado) : []
+        )
+      ).size,
+    },
   ];
 
+  /* ------------------- UI ----------------- */
   return (
     <>
       <AppBar position="static">
@@ -45,52 +107,47 @@ const App: React.FC = () => {
       </AppBar>
 
       <Container sx={{ mt: 4 }}>
-        {/* Gráficos Generales: mismo layout que las cards de resumen */}
-        <Box
-          display="flex"
-          justifyContent="center"
-          flexWrap="wrap"
-          gap={2}
-          mb={4}
-        >
-          {[ImpactChart, BarChart, LineChart].map((Chart, i) => (
-            <Card key={i} sx={{ flex: "1 1 200px", maxWidth: 400 }}>
-              <CardContent>
-                {/* Opcional: un título pequeño aquí */}
-                {/* <Typography variant="subtitle2" gutterBottom>
-            {i === 0 ? "Distribución" : i === 1 ? "Barras" : "Tendencia"}
-          </Typography> */}
-                <Chart />
-              </CardContent>
-            </Card>
+        {/* Resumen */}
+        <Grid container spacing={2} justifyContent="center" mb={4}>
+          {resumen.map((c) => (
+            <Grid key={c.label} item xs={12} sm={6} md={4}>
+              <Card>
+                <CardContent>
+                  <Typography variant="subtitle2" gutterBottom>
+                    {c.label}
+                  </Typography>
+                  <Typography variant="h4">{c.value}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
           ))}
-        </Box>
+        </Grid>
 
-        {/* Tarjetas de resumen */}
-        <Box display="flex" gap={2} flexWrap="wrap" mb={4}>
-          {cards.map((c) => (
-            <Card key={c.label} sx={{ flex: "1 1 200px" }}>
-              <CardContent>
-                <Typography variant="subtitle2">{c.label}</Typography>
-                <Typography variant="h4">{c.value}</Typography>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
+        {/* Crear */}
+        <PlanForm onCreated={handleCreated} />
 
-        {/* Formulario de creación */}
-        <PlanForm />
+        {/* Editar */}
+        {editing && (
+          <PlanForm
+            initialData={editing}
+            onSaved={handleSaved}
+            onCancel={() => setEditing(null)}
+          />
+        )}
 
-        {/* Lista de planes */}
+        {/* Listado */}
         <Box sx={{ mt: 4 }}>
           <Typography variant="h6" gutterBottom>
             Mis Planes Estratégicos
           </Typography>
-          <PlanList />
+          <PlanList
+            planes={planes}
+            onAnalyze={handleAnalyze}
+            onDelete={handleDelete}
+            onEdit={(p) => setEditing(p)}
+          />
         </Box>
       </Container>
     </>
   );
-};
-
-export default App;
+}
