@@ -85,15 +85,6 @@ export default function App() {
     <>
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" color="inherit">
-            <MenuIcon />
-          </IconButton>
-          <Box
-            component="img"
-            src="/Logo_EAFIT.png"
-            alt="EAFIT"
-            sx={{ height: 40, ml: 2 }}
-          />
           <Typography variant="h6" sx={{ flexGrow: 1, ml: 2 }}>
             SmartPlans EAFIT
           </Typography>
@@ -102,11 +93,26 @@ export default function App() {
 
       <Container sx={{ mt: 4 }}>
         {/* Resumen */}
-        <Grid container spacing={2} justifyContent="center" mb={4}>
+        <Grid container spacing={2} wrap="nowrap" mb={4}>
           {resumen.map((c) => (
-            <Grid key={c.label} item xs={12} sm={6} md={4}>
-              <Card>
-                <CardContent>
+            <Grid
+              key={c.label}
+              item
+              sx={{
+                flex: "1 1 0%" /* 2️⃣ reparte el ancho disponible */,
+                display: "flex",
+              }}
+            >
+              <Card sx={{ width: "100%", height: "100%" }}>
+                <CardContent
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    py: 4, // más aire vertical
+                  }}
+                >
                   <Typography variant="subtitle2" gutterBottom>
                     {c.label}
                   </Typography>
