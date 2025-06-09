@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest --passWithNoTests --coverage"
+    "test": "vitest"
   },
   "dependencies": {
     "@date-io/date-fns": "^3.2.1",
