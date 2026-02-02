@@ -1,54 +1,39 @@
-# React + TypeScript + Vite
+# SmartPlans (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+SmartPlans is a lightweight planning dashboard to create, edit, and track strategic plans.  
+It connects to the SmartPlans API to generate AI feedback (risks, suggestions, and estimated impact) for each plan.
 
-Currently, two official plugins are available:
+## Tech stack
+- React + TypeScript + Vite
+- Material UI (MUI)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Prerequisites
+- Node.js (recommended: LTS)
+- npm (or pnpm/yarn)
 
-## Expanding the ESLint configuration
+## Local setup
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 1) Clone the repository
+git clone https://github.com/R4D4M4NTHYS24/smartPlans.git
+cd smartPlans
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### 2) Install dependencies
+npm install
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 3) Configure the API URL
+Create a .env.local file in the project root:
+VITE_API_URL=http://localhost:8000
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 4) Run the dev server
+npm run dev
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+### Open:
+- http://localhost:5173
+
+### Production build
+- npm run build
+- npm run preview
+
+### Notes
+- Make sure the backend is running (default: http://localhost:8000).
+- If you see CORS errors in the browser, review the backend CORS configuration.
