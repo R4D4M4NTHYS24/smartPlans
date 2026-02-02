@@ -86,7 +86,7 @@ export default function App() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1, ml: 2 }}>
-            SmartPlans EAFIT
+            SmartPlans
           </Typography>
         </Toolbar>
       </AppBar>
